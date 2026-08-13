@@ -1,88 +1,301 @@
 export default async function handler(req, res) {
-  // CORS: allow requests from GitHub Pages / browser
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  // Browser preflight request
+  // =========================
+  // CORS
+  // =========================
+
+  res.setHeader(
+    "Access-Control-Allow-Origin",
+    "*"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "POST, OPTIONS"
+  );
+
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type"
+  );
+
+
+  // =========================
+  // Browser preflight
+  // =========================
+
   if (req.method === "OPTIONS") {
-    return res.status(204).end();
+
+    return res
+      .status(204)
+      .end();
+
   }
 
-  // Only POST
+
+  // =========================
+  // POST only
+  // =========================
+
   if (req.method !== "POST") {
-    return res.status(405).json({
-      error: "Method not allowed"
-    });
+
+    return res
+      .status(405)
+      .json({
+        error: "Method not allowed"
+      });
+
   }
+
 
   try {
-    const { message } = req.body || {};
 
-    if (!message || !message.trim()) {
-      return res.status(400).json({
-        error: "Please enter a message"
-      });
+    // =========================
+    // Get message
+    // =========================
+
+    const body = req.body || {};
+
+    const message =
+      typeof body.message === "string"
+        ? body.message.trim()
+        : "";
+
+
+    if (!message) {
+
+      return res
+        .status(400)
+        .json({
+          error: "Please enter a message"
+        });
+
     }
 
-    if (!process.env.OPENAI_API_KEY) {
-      return res.status(500).json({
-        error: "OPENAI_API_KEY is not configured on Vercel"
-      });
+
+    // =========================
+    // Check API key
+    // =========================
+
+    const apiKey =
+      process.env.OPENAI_API_KEY;
+
+
+    if (!apiKey) {
+
+      console.error(
+        "OPENAI_API_KEY is missing"
+      );
+
+      return res
+        .status(500)
+        .json({
+          error:
+            "OPENAI_API_KEY ما متضبطاش فـ Vercel."
+        });
+
     }
+
+
+    // =========================
+    // OpenAI Responses API
+    // =========================
 
     const response = await fetch(
       "https://api.openai.com/v1/responses",
       {
+
         method: "POST",
+
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${process.env.OPENAI_API_KEY}`
+
+          "Content-Type":
+            "application/json",
+
+          "Authorization":
+            `Bearer ${apiKey}`
+
         },
+
         body: JSON.stringify({
+
           model: "gpt-5-mini",
+
           instructions:
-            "أنت مساعد ذكي داخل Code AI Academy. جاوب بطريقة بسيطة وواضحة ومناسبة للمبتدئين. ساعد المستخدم في البرمجة والذكاء الاصطناعي.",
+            `
+أنت مساعد ذكي داخل منصة Code AI Academy.
+
+جاوب المستخدم بطريقة واضحة وبسيطة ومفيدة.
+
+المستخدمين ديال المنصة ممكن يكونو مبتدئين،
+لذلك شرح المفاهيم خطوة بخطوة وبأمثلة بسيطة.
+
+يمكنك الإجابة على:
+- البرمجة
+- HTML
+- CSS
+- JavaScript
+- Python
+- الذكاء الاصطناعي
+- تطوير المواقع
+- أسئلة عامة
+
+إلا كان السؤال بالدارجة المغربية،
+جاوب بالدارجة المغربية قدر الإمكان.
+
+إلا كان السؤال بالعربية،
+جاوب بالعربية.
+
+إلا كان السؤال بالإنجليزية،
+جاوب بالإنجليزية.
+
+ما تقولش أنك إنسان.
+أنت مساعد ذكاء اصطناعي.
+
+إلا كان السؤال غير واضح،
+طلب توضيح بسيط.
+            `,
+
           input: message
+
         })
+
       }
     );
 
-    const data = await response.json();
+
+    // =========================
+    // Read OpenAI response
+    // =========================
+
+    const data =
+      await response.json();
+
+
+    // =========================
+    // OpenAI error
+    // =========================
 
     if (!response.ok) {
-      console.error("OpenAI error:", data);
 
-      return res.status(response.status).json({
-        error: data?.error?.message || "OpenAI API error"
-      });
+      console.error(
+        "OpenAI API error:",
+        data
+      );
+
+      const apiError =
+        data?.error?.message ||
+        "OpenAI API error";
+
+      return res
+        .status(response.status)
+        .json({
+          error: apiError
+        });
+
     }
 
-    const reply =
-      data.output
-        ?.flatMap(item => item.content || [])
-        ?.filter(item => item.type === "output_text")
-        ?.map(item => item.text)
-        ?.join("\n")
-        ?.trim() || "";
+
+    // =========================
+    // Extract answer
+    // =========================
+
+    let reply =
+      data?.output_text || "";
+
+
+    /*
+      Fallback إذا ما كانش
+      output_text موجود.
+    */
 
     if (!reply) {
-      console.error("No text returned:", data);
 
-      return res.status(500).json({
-        error: "No response text received from OpenAI"
-      });
+      const output =
+        Array.isArray(data?.output)
+          ? data.output
+          : [];
+
+
+      for (const item of output) {
+
+        if (
+          Array.isArray(item?.content)
+        ) {
+
+          for (
+            const content
+            of item.content
+          ) {
+
+            if (
+              content?.type ===
+              "output_text" &&
+              typeof content?.text ===
+              "string"
+            ) {
+
+              reply +=
+                content.text;
+
+            }
+
+          }
+
+        }
+
+      }
+
     }
 
-    return res.status(200).json({
-      reply
-    });
+
+    // =========================
+    // Empty response
+    // =========================
+
+    if (!reply.trim()) {
+
+      console.error(
+        "Empty OpenAI response:",
+        data
+      );
+
+      return res
+        .status(502)
+        .json({
+          error:
+            "OpenAI رجع جواب فارغ."
+        });
+
+    }
+
+
+    // =========================
+    // Success
+    // =========================
+
+    return res
+      .status(200)
+      .json({
+        reply: reply.trim()
+      });
+
 
   } catch (error) {
-    console.error("Server error:", error);
 
-    return res.status(500).json({
-      error: "Server error"
-    });
+    console.error(
+      "Server error:",
+      error
+    );
+
+
+    return res
+      .status(500)
+      .json({
+        error:
+          "وقع مشكل فالسيرفر. حاول مرة أخرى."
+      });
+
   }
-}
+
+  }
