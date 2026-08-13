@@ -39,9 +39,14 @@ export default async function handler(req, res) {
       });
     }
 
-    return res.status(200).json({
-      reply: data.output_text
-    });
+    const reply =
+  data.output?.[0]?.content?.find(
+    item => item.type === "output_text"
+  )?.text || "";
+
+return res.status(200).json({
+  reply
+});
 
   } catch (error) {
     console.error(error);
