@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>دروس الذكاء الاصطناعي - Code AI Academy</title>
+
+  <title>مساعد الذكاء الاصطناعي - Code AI Academy</title>
 
   <style>
     * {
       box-sizing: border-box;
-      margin: 0;
-      padding: 0;
     }
 
     body {
+      margin: 0;
       font-family: Arial, sans-serif;
       background: #0f172a;
       color: white;
@@ -20,70 +20,171 @@
     }
 
     header {
-      background: #111827;
-      padding: 25px 20px;
       text-align: center;
+      padding: 30px 20px;
+      background: #111827;
       border-bottom: 1px solid #334155;
     }
 
     header h1 {
+      margin: 0 0 8px;
       color: #38bdf8;
-      margin-bottom: 5px;
+      font-size: 30px;
     }
 
     header p {
+      margin: 0;
       color: #cbd5e1;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 50px 20px;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-    }
-
-    .hero h2 {
-      color: #38bdf8;
-      margin-bottom: 15px;
+      font-size: 16px;
     }
 
     .container {
-      max-width: 900px;
-      margin: auto;
-      padding: 30px 20px;
+      width: min(900px, 94%);
+      margin: 30px auto;
     }
 
-    .lesson {
+    .title {
+      text-align: center;
+      color: #38bdf8;
+      margin-bottom: 25px;
+      font-size: 26px;
+    }
+
+    .chat-card {
+      background: #111827;
+      border: 1px solid #334155;
+      border-radius: 18px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+    }
+
+    #chatBox {
+      height: 420px;
+      overflow-y: auto;
+      padding: 10px;
+      background: #0b1220;
+      border-radius: 14px;
+      border: 1px solid #263449;
+      margin-bottom: 15px;
+    }
+
+    .bot-message,
+    .user-message {
+      max-width: 85%;
+      padding: 13px 16px;
+      margin: 10px 0;
+      border-radius: 14px;
+      word-wrap: break-word;
+      white-space: pre-wrap;
+    }
+
+    .bot-message {
+      background: #1e293b;
+      color: #f8fafc;
+      margin-left: auto;
+      margin-right: 0;
+    }
+
+    .user-message {
+      background: #38bdf8;
+      color: #082f49;
+      margin-right: auto;
+      margin-left: 0;
+    }
+
+    .input-area {
+      display: flex;
+      gap: 10px;
+    }
+
+    #question {
+      flex: 1;
+      min-width: 0;
+      padding: 15px;
+      border: 1px solid #475569;
+      border-radius: 12px;
+      background: #1e293b;
+      color: white;
+      font-size: 16px;
+      outline: none;
+    }
+
+    #question:focus {
+      border-color: #38bdf8;
+    }
+
+    #sendBtn {
+      border: none;
+      border-radius: 12px;
+      padding: 0 22px;
+      background: #38bdf8;
+      color: #082f49;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #sendBtn:hover {
+      opacity: 0.9;
+    }
+
+    #sendBtn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .examples {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .example {
       background: #1e293b;
       border: 1px solid #334155;
-      border-radius: 15px;
-      padding: 25px;
-      margin-bottom: 20px;
+      color: #e2e8f0;
+      padding: 12px;
+      border-radius: 12px;
+      cursor: pointer;
+      text-align: right;
     }
 
-    .lesson h3 {
-      color: #38bdf8;
-      margin-bottom: 10px;
+    .example:hover {
+      border-color: #38bdf8;
     }
 
-    .lesson p {
-      color: #cbd5e1;
-    }
-
-    .button {
-      display: inline-block;
-      margin-top: 25px;
-      padding: 12px 25px;
-      background: #38bdf8;
-      color: #0f172a;
-      text-decoration: none;
-      border-radius: 10px;
-      font-weight: bold;
-    }
-
-    footer {
+    .status {
       text-align: center;
-      padding: 30px 20px;
       color: #94a3b8;
+      font-size: 13px;
+      margin-top: 12px;
+    }
+
+    @media (max-width: 600px) {
+      header h1 {
+        font-size: 25px;
+      }
+
+      .container {
+        width: 96%;
+      }
+
+      .input-area {
+        flex-direction: column;
+      }
+
+      #sendBtn {
+        min-height: 50px;
+      }
+
+      #chatBox {
+        height: 380px;
+      }
+
+      .bot-message,
+      .user-message {
+        max-width: 94%;
+      }
     }
   </style>
 </head>
@@ -91,166 +192,249 @@
 <body>
 
   <header>
-    <h1>🤖 Code AI Academy</h1>
-    <p>تعلم الذكاء الاصطناعي بطريقة بسيطة وعملية</p>
+    <h1>Code AI Academy 🤖</h1>
+    <p>تعلم البرمجة والذكاء الاصطناعي بطريقة بسيطة وعملية</p>
   </header>
 
-  <section class="hero">
-    <h2>🤖 دروس الذكاء الاصطناعي</h2>
-    <p>ابدأ رحلتك في عالم الذكاء الاصطناعي من الصفر 🚀</p>
-  </section>
+  <main class="container">
 
-  <section class="container">
-<section class="ai-chat">
-  <h2>🤖 مساعد الذكاء الاصطناعي</h2>
+    <h2 class="title">🤖 مساعد الذكاء الاصطناعي</h2>
 
-  <div id="chatBox" class="chat-box">
-    <div class="bot-message">
-      سلام! 👋 أنا مساعدك في Code AI Academy. سولني على البرمجة أو الذكاء الاصطناعي.
-    </div>
-  </div>
+    <div class="chat-card">
 
-  <div class="chat-input">
-    <input
-      id="question"
-      type="text"
-      placeholder="كتب سؤالك هنا..."
-      onkeydown="if(event.key==='Enter') askAI()"
-    />
-    <button onclick="askAI()">إرسال 🚀</button>
-  </div>
-</section>
+      <div id="chatBox">
 
-<style>
-  .ai-chat {
-    max-width: 800px;
-    margin: 40px auto;
-    padding: 25px;
-    background: #111827;
-    border-radius: 15px;
-  }
+        <div class="bot-message">
+          سلام 👋 أنا مساعدك في Code AI Academy.
+          سولني على البرمجة، JavaScript، HTML، CSS، الذكاء الاصطناعي أو أي سؤال آخر، وغادي نحاول نعاونك.
+        </div>
 
-  .ai-chat h2 {
-    text-align: center;
-    color: #38bdf8;
-    margin-bottom: 20px;
-  }
-
-  .chat-box {
-    min-height: 250px;
-    max-height: 450px;
-    overflow-y: auto;
-    padding: 15px;
-    background: #0f172a;
-    border-radius: 10px;
-    margin-bottom: 15px;
-  }
-
-  .bot-message,
-  .user-message {
-    padding: 12px 15px;
-    margin: 10px 0;
-    border-radius: 10px;
-    line-height: 1.6;
-  }
-
-  .bot-message {
-    background: #1e293b;
-    color: white;
-  }
-
-  .user-message {
-    background: #38bdf8;
-    color: #0f172a;
-    text-align: right;
-  }
-
-  .chat-input {
-    display: flex;
-    gap: 10px;
-  }
-
-  .chat-input input {
-    flex: 1;
-    padding: 13px;
-    border: none;
-    border-radius: 10px;
-    font-size: 16px;
-  }
-
-  .chat-input button {
-    padding: 13px 20px;
-    border: none;
-    border-radius: 10px;
-    background: #38bdf8;
-    color: #0f172a;
-    font-weight: bold;
-  }
-</style>
-
-<script>
-  async function askAI() {
-    const input = document.getElementById("question");
-    const chatBox = document.getElementById("chatBox");
-
-    const question = input.value.trim();
-
-    if (!question) return;
-
-    chatBox.innerHTML += `
-      <div class="user-message">
-        ${question}
       </div>
-    `;
 
-    input.value = "";
+      <div class="input-area">
 
-    const loading = document.createElement("div");
-    loading.className = "bot-message";
-    loading.textContent = "كنفكر... 🤔";
-    chatBox.appendChild(loading);
+        <input
+          id="question"
+          type="text"
+          placeholder="كتب سؤالك هنا..."
+          autocomplete="off"
+        >
 
-    chatBox.scrollTop = chatBox.scrollHeight;
+        <button id="sendBtn">
+          🚀 إرسال
+        </button>
 
-    try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          message: question
-        })
-      });
+      </div>
 
-      const data = await response.json();
+      <div class="examples">
 
-      loading.textContent =
-        data.reply || "سمح ليا، وقع مشكل فالإجابة.";
-    } catch (error) {
-      loading.textContent =
-        "وقع مشكل فالاتصال بالسيرفر ❌";
+        <button class="example" data-question="شنو هو JavaScript؟">
+          شنو هو JavaScript؟
+        </button>
+
+        <button class="example" data-question="شرح ليا HTML بطريقة بسيطة">
+          شرح ليا HTML بطريقة بسيطة
+        </button>
+
+        <button class="example" data-question="شنو الفرق بين HTML و CSS و JavaScript؟">
+          الفرق بين HTML و CSS و JavaScript؟
+        </button>
+
+      </div>
+
+      <div class="status" id="status">
+        جاهز للإجابة 🚀
+      </div>
+
+    </div>
+
+  </main>
+
+  <script>
+
+    const input = document.getElementById("question");
+    const sendBtn = document.getElementById("sendBtn");
+    const chatBox = document.getElementById("chatBox");
+    const status = document.getElementById("status");
+
+    /*
+      إذا كان الموقع خدام على Vercel بنفس المشروع:
+      /api/chat
+
+      وإذا بغيتي تستعمل Vercel API من GitHub Pages:
+      بدّلها إلى رابط Vercel الكامل.
+    */
+
+    const API_URL = "/api/chat";
+
+
+    function addMessage(text, type) {
+
+      const message = document.createElement("div");
+
+      message.className =
+        type === "user"
+          ? "user-message"
+          : "bot-message";
+
+      message.textContent = text;
+
+      chatBox.appendChild(message);
+
+      chatBox.scrollTop = chatBox.scrollHeight;
+
+      return message;
     }
 
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-</script>
-    <div class="lesson">
-      <h3>🧠 الدرس 1: ما هو الذكاء الاصطناعي؟</h3>
-      <p>
-        تعلم ما هو الذكاء الاصطناعي وكيف تستطيع الآلات والبرامج
-        تنفيذ مهام تحتاج عادةً إلى ذكاء بشري.
-      </p>
-    </div>
 
-    <div class="lesson">
-      <h3>🤖 الدرس 2: كيف يعمل الذكاء الاصطناعي؟</h3>
-      <p>
-        تعرف على البيانات، النماذج، والتعلم الآلي بطريقة سهلة ومبسطة.
-      </p>
-    </div>
+    function setLoading(isLoading) {
 
-    <div class="lesson">
-      <h3>💬 الدرس 3: الذكاء الاصطناعي التوليدي</h3>
-      <p>
-        اكتشف كيف تستطيع أدوات الذكاء الاصطناعي
+      sendBtn.disabled = isLoading;
+      input.disabled = isLoading;
+
+      if (isLoading) {
+        sendBtn.textContent = "⏳";
+        status.textContent = "المساعد كيفكر... 🤔";
+      } else {
+        sendBtn.textContent = "🚀 إرسال";
+        status.textContent = "جاهز للإجابة 🚀";
+      }
+    }
+
+
+    async function askAI() {
+
+      const question = input.value.trim();
+
+      if (!question) {
+        return;
+      }
+
+      addMessage(question, "user");
+
+      input.value = "";
+
+      setLoading(true);
+
+      const loadingMessage =
+        addMessage("⏳ كنوجد ليك الجواب...", "bot");
+
+
+      try {
+
+        const response = await fetch(API_URL, {
+
+          method: "POST",
+
+          headers: {
+            "Content-Type": "application/json"
+          },
+
+          body: JSON.stringify({
+            message: question
+          })
+
+        });
+
+
+        let data;
+
+        try {
+          data = await response.json();
+        } catch (jsonError) {
+
+          throw new Error(
+            "السيرفر رجع جواب غير صالح."
+          );
+
+        }
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data?.error ||
+            `خطأ من السيرفر: ${response.status}`
+          );
+
+        }
+
+
+        const reply =
+          data?.reply ||
+          data?.output_text ||
+          "ما قدرتش نلقى جواب.";
+
+
+        loadingMessage.textContent = reply;
+
+        status.textContent = "تمت الإجابة ✅";
+
+      } catch (error) {
+
+        console.error("AI ERROR:", error);
+
+        loadingMessage.textContent =
+          "وقع مشكل ❌\n\n" +
+          error.message;
+
+        status.textContent = "وقع خطأ ❌";
+
+      } finally {
+
+        setLoading(false);
+
+        input.focus();
+
+      }
+
+    }
+
+
+    sendBtn.addEventListener(
+      "click",
+      askAI
+    );
+
+
+    input.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+
+          event.preventDefault();
+
+          askAI();
+
+        }
+
+      }
+    );
+
+
+    document
+      .querySelectorAll(".example")
+      .forEach(function(button) {
+
+        button.addEventListener(
+          "click",
+          function() {
+
+            input.value =
+              button.dataset.question;
+
+            input.focus();
+
+          }
+        );
+
+      });
+
+  </script>
+
+</body>
+  </html>
